@@ -230,7 +230,7 @@ deploy() {
   test $? -eq 0 || abort snapshot copy failed
 
   # link current $env
-  run "ln -sfn $path/release-$now $path/current"
+  run "ln -sfn $path/release-$now $path/current-$ENV"
   test $? -eq 0 || abort symlink failed
 
   # deploy log
