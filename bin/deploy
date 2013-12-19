@@ -199,6 +199,7 @@ setup() {
 deploy() {
   local ref=$1
   local path=`config_get path`
+  local now=$(date +"%Y%m%d%H%M%S")
   log deploying
 
   hook pre-deploy || abort pre-deploy hook failed
@@ -223,8 +224,13 @@ deploy() {
   run "cd $path/source && git reset --hard $ref"
   test $? -eq 0 || abort git reset failed
 
-  # link current
-  run "ln -sfn $path/source $path/current"
+  # copying snapshot
+  log copying to snapshot directory release-$now
+  run "cp -r $path/source $path/release-$now && rm -rf $path/release-$now/.git"
+  test $? -eq 0 || abort snapshot copy failed
+
+  # link current $env
+  run "ln -sfn $path/release-$now $path/current"
   test $? -eq 0 || abort symlink failed
 
   # deploy log
