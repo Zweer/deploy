@@ -162,6 +162,7 @@ hook() {
   local hook=$1
   local path=`config_get path`
   local cmd=`config_get $hook`
+
   if test -n "$cmd"; then
     log "executing $hook \`$cmd\`"
     run "cd $path/current-$ENV; \
