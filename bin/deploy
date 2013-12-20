@@ -164,7 +164,7 @@ hook() {
   local cmd=`config_get $hook`
   if test -n "$cmd"; then
     log "executing $hook \`$cmd\`"
-    run "cd $path/current; \
+    run "cd $path/current-$ENV; \
       SHARED=\"$path/shared\" \
       $cmd 2>&1 | tee -a $LOG; \
       exit \${PIPESTATUS[0]}"
@@ -237,7 +237,7 @@ deploy() {
   test $? -eq 0 || abort snapshot copy failed
 
   # link current $env
-  run "ln -sfn $path/release-$now\`cat $path/.current\` $path/current-$ENV"
+  run "ln -sfn $path/release-$now-\`cat $path/.current\` $path/current-$ENV"
   test $? -eq 0 || abort symlink failed
 
   # deploy log
