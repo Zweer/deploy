@@ -224,19 +224,24 @@ deploy() {
   run "cd $path/source && git reset --hard $ref"
   test $? -eq 0 || abort git reset failed
 
+  # save current hash
+  log saving current hash
+  run "cd $path/source && \
+      echo \`git rev-parse --short HEAD\` \
+      > $path/.current"
+  test $? -eq 0 || abort current save failed
+
   # copying snapshot
-  log copying to snapshot directory release-$now
-  run "cp -r $path/source $path/release-$now && rm -rf $path/release-$now/.git"
+  log copying to snapshot directory release-$now-...
+  run "cp -r $path/source $path/release-$now-\`cat $path/.current\` && rm -rf $path/release-$now-\`cat $path/.current\`/.git"
   test $? -eq 0 || abort snapshot copy failed
 
   # link current $env
-  run "ln -sfn $path/release-$now $path/current-$ENV"
+  run "ln -sfn $path/release-$now\`cat $path/.current\` $path/current-$ENV"
   test $? -eq 0 || abort symlink failed
 
   # deploy log
-  run "cd $path/source && \
-      echo \`git rev-parse --short HEAD\` \
-      >> $path/.deploys"
+  run "cat $path/.current >> $path/.deploys"
   test $? -eq 0 || abort deploy log append failed
 
   hook post-deploy || abort post-deploy hook failed
