@@ -162,10 +162,15 @@ hook() {
   local hook=$1
   local path=`config_get path`
   local cmd=`config_get $hook`
+  local relative=$2
+
+  if [ -z $relative ]; then
+    relative="current-$ENV"
+  fi
 
   if test -n "$cmd"; then
     log "executing $hook \`$cmd\`"
-    run "cd $path/current-$ENV; \
+    run "cd $path/$relative; \
       SHARED=\"$path/shared\" \
       $cmd 2>&1 | tee -a $LOG; \
       exit \${PIPESTATUS[0]}"
@@ -193,7 +198,7 @@ setup() {
   run "git clone $repo $path/source"
   test $? -eq 0 || abort failed to clone
 
-  hook post-setup || abort post-setup hook failed
+  hook post-setup "$path" || abort post-setup hook failed
 
   deploy origin/master
 }
@@ -246,6 +251,8 @@ deploy() {
     log copying to snapshot directory release-$now-$hash
     run "cp -r $path/source $path/release-$now-$hash && rm -rf $path/release-$now-$hash.git"
     test $? -eq 0 || abort snapshot copy failed
+
+    hook pre-symlink "release-$now-$hash" || abort pre-symlink hook failed
 
     # link current $env
     run "ln -sfn $path/release-$now-$hash $path/current-$ENV"
