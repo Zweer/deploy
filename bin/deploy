@@ -231,10 +231,13 @@ deploy() {
   run "cd $path/source && git reset --hard $ref"
   test $? -eq 0 || abort git reset failed
 
-  # save current hash
-  log saving current hash
+  # retrieving current hash
+  log retrieving current hash
   hash=`run "cd $path/source && \
       echo \`git rev-parse --short HEAD\`"`
+
+  # saving current hash
+  log saving current hash
   run "echo $hash > $path/.current"
   test $? -eq 0 || abort current save failed
 
