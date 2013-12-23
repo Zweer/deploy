@@ -1,3 +1,9 @@
+0.7.0 / 2013-12-23
+==================
+
+  * Changed the behaviour a bit: now it creates a directory for each deploy, and also current symlinks are one for each environment
+  * It only deploys if the current hash is different
+  * Added the post-setup and pre-symlink hooks
 
 0.6.0 / 2012-06-19 
 ==================

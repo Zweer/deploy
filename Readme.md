@@ -7,7 +7,7 @@
 
     $ make install
 
-  Visit the [wiki](https://github.com/visionmedia/deploy/wiki) for additional usage information.
+  Visit the [wiki](https://github.com/Zweer/deploy/wiki) for additional usage information.
 
 ## Usage
 
@@ -98,17 +98,29 @@
   Now the deploy script will invoke `ssh -A` when deploying and there's
   no need to keep SSH keys on your servers.
 
-### Hooks
+## Hooks
 
-  All hooks are arbitrary commands, executed relative to `path/current`,
-  aka the previous deployment for `pre-deploy`, and the new deployment
-  for `post-deploy`. Of course you may specify absolute paths as well.
+### post-setup
+
+  Executed relative to `path`, the folder where everything happens
+
+      post-setup ./bin/something
 
 ### pre-deploy
 
+  Executed relative to `path/current-$ENV`, the previous deployment
+
       pre-deploy ./bin/something
 
+### pre-symlink
+
+  Executed relative to `path/release-$date-$hash`, the new deployment
+
+      pre-symlink ./bin/something
+
 ### post-deploy
+
+  Executed relative to `path/current-$ENV`, the new deployment
 
       post-deploy ./bin/restart
 
