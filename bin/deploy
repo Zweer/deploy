@@ -234,25 +234,29 @@ deploy() {
   # retrieving current hash
   log retrieving current hash
   hash=`run "cd $path/source && \
-      echo \`git rev-parse --short HEAD\`"`
+    echo \`git rev-parse --short HEAD\`"`
 
-  # saving current hash
-  log saving current hash
-  run "echo $hash > $path/.current"
-  test $? -eq 0 || abort current save failed
+  if [ $hash != `run "cat $path/.current"` ]; then
+    # saving current hash
+    log saving current hash
+    run "echo $hash > $path/.current"
+    test $? -eq 0 || abort current save failed
 
-  # copying snapshot
-  log copying to snapshot directory release-$now-$hash
-  run "cp -r $path/source $path/release-$now-$hash && rm -rf $path/release-$now-$hash.git"
-  test $? -eq 0 || abort snapshot copy failed
+    # copying snapshot
+    log copying to snapshot directory release-$now-$hash
+    run "cp -r $path/source $path/release-$now-$hash && rm -rf $path/release-$now-$hash.git"
+    test $? -eq 0 || abort snapshot copy failed
 
-  # link current $env
-  run "ln -sfn $path/release-$now-$hash $path/current-$ENV"
-  test $? -eq 0 || abort symlink failed
+    # link current $env
+    run "ln -sfn $path/release-$now-$hash $path/current-$ENV"
+    test $? -eq 0 || abort symlink failed
 
-  # deploy log
-  run "cat $path/.current >> $path/.deploys"
-  test $? -eq 0 || abort deploy log append failed
+    # deploy log
+    run "echo $hash >> $path/.deploys"
+    test $? -eq 0 || abort deploy log append failed
+  else
+    log current hash is the same of the deployed one, ignoring deployment
+  fi
 
   hook post-deploy || abort post-deploy hook failed
 
