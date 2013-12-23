@@ -206,6 +206,7 @@ deploy() {
   local ref=$1
   local path=`config_get path`
   local now=$(date +"%Y%m%d%H%M%S")
+  local hash
   log deploying
 
   hook pre-deploy || abort pre-deploy hook failed
@@ -232,18 +233,18 @@ deploy() {
 
   # save current hash
   log saving current hash
-  run "cd $path/source && \
-      echo \`git rev-parse --short HEAD\` \
-      > $path/.current"
+  hash=`run "cd $path/source && \
+      echo \`git rev-parse --short HEAD\`"`
+  run "echo $hash > $path/.current"
   test $? -eq 0 || abort current save failed
 
   # copying snapshot
-  log copying to snapshot directory release-$now-...
-  run "cp -r $path/source $path/release-$now-\`cat $path/.current\` && rm -rf $path/release-$now-\`cat $path/.current\`/.git"
+  log copying to snapshot directory release-$now-$hash
+  run "cp -r $path/source $path/release-$now-$hash && rm -rf $path/release-$now-$hash.git"
   test $? -eq 0 || abort snapshot copy failed
 
   # link current $env
-  run "ln -sfn $path/release-$now-\`cat $path/.current\` $path/current-$ENV"
+  run "ln -sfn $path/release-$now-$hash $path/current-$ENV"
   test $? -eq 0 || abort symlink failed
 
   # deploy log
