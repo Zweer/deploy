@@ -236,10 +236,9 @@ deploy() {
 
   # retrieving current hash
   log retrieving current hash
-  hash=`run "cd $path/source && \
-    echo \`git rev-parse --short HEAD\`"`
-
-  if [ $hash != `run "cat $path/.current"` ]; then
+  hash=`run "echo \`cd $path/source && git rev-parse --short HEAD\`"`
+  
+  if [ "${hash}" != "`run \"cat $path/.current\"`" ]; then
     # saving current hash
     log saving current hash
     run "echo $hash > $path/.current"
