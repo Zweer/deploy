@@ -1,3 +1,9 @@
+0.8.0 / 2014-01-10
+=================
+
+  * Fixed the git hash on the remote host [bigethan]
+  * Updated the git uri
+
 0.7.0 / 2013-12-23
 ==================
 
